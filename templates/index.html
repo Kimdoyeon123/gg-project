@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 감성 음악 매치 - 이미지로 찾는 나만의 BGM</title>
+    <style>
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .upload-box {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .upload-box::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #ffecd2);
+            filter: blur(20px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        #imageUpload {
+            display: none;
+        }
+        .upload-label, #findMusicButton {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .upload-label:hover, #findMusicButton:hover {
+            background-color: #2980b9;
+        }
+        #findMusicButton {
+            background-color: #2ecc71;
+        }
+        #findMusicButton:hover {
+            background-color: #27ae60;
+        }
+        #result {
+            font-size: 1.2em;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+        }
+        .crayon {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            opacity: 0.6;
+            z-index: -1;
+        }
+        .crayon1 { top: 10%; left: 5%; background-color: #ff9ff3; }
+        .crayon2 { top: 80%; right: 5%; background-color: #feca57; }
+        .crayon3 { top: 50%; left: 80%; background-color: #48dbfb; }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            margin: 20px auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="crayon crayon1"></div>
+    <div class="crayon crayon2"></div>
+    <div class="crayon crayon3"></div>
+    
+    <div class="container">
+        <h1>🎵 감성 음악 매치</h1>
+        <div class="upload-box" id="uploadBox">
+            <label for="imageUpload" class="upload-label">이미지 선택</label>
+            <input type="file" id="imageUpload" accept="image/*">
+            <button id="findMusicButton" style="display: none;">감성 음악 찾기</button>
+            <img id="imagePreview" alt="업로드된 이미지 미리보기">
+        </div>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const findMusicButton = document.getElementById('findMusicButton');
+        const uploadBox = document.getElementById('uploadBox');
+        const resultElement = document.getElementById('result');
+
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    findMusicButton.style.display = 'inline-block';
+                    
+                    // 이미지 로드 후 업로드 박스 크기 조정
+                    imagePreview.onload = function() {
+                        uploadBox.style.width = this.width + 'px';
+                        uploadBox.style.maxWidth = '100%';
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        findMusicButton.addEventListener('click', function() {
+            let formData = new FormData();
+            formData.append('image', imageUpload.files[0]);
+
+            resultElement.textContent = "분석 중...";
+
+            fetch('/upload-image', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                resultElement.innerHTML = `<strong>추천 음악:</strong> ${data.music}<br><strong>이미지 설명:</strong> ${data.caption}`;
+            }).catch(error => {
+                resultElement.textContent = "오류가 발생했습니다. 다시 시도해주세요.";
+            });
+        });
+    </script>
+</body>
+</html>
