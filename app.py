@@ -4,6 +4,7 @@ from PIL import Image
 import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import json
 
 app = Flask(__name__)
 
@@ -12,15 +13,18 @@ processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 emotion_classifier = pipeline("sentiment-analysis", model="j-hartmann/emotion-english-distilroberta-base", framework="pt")
 
-# 미리 저장된 음악 감정 벡터 (7차원: anger, disgust, fear, joy, neutral, sadness, surprise)
-music_vectors = {
-    "Happy by Pharrell Williams": np.array([0.1, 0.0, 0.1, 0.8, 0.0, 0.0, 0.0]),
-    "Good Time by Carly Rae Jepsen": np.array([0.1, 0.0, 0.1, 0.7, 0.0, 0.0, 0.1]),
-    "Someone Like You by Adele": np.array([0.0, 0.0, 0.1, 0.0, 0.1, 0.8, 0.0]),
-    "The Night We Met by Lord Huron": np.array([0.0, 0.0, 0.1, 0.0, 0.1, 0.9, 0.0]),
-    "Break Stuff by Limp Bizkit": np.array([0.8, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0]),
-    "Numb by Linkin Park": np.array([0.9, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]),
-}
+# JSON 파일로부터 음악 감정 벡터를 불러오기
+def load_music_vectors(json_file):
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    # JSON에서 읽어온 데이터를 np.array로 변환
+    music_vectors = {track: np.array(emotions) for track, emotions in data.items()}
+    return music_vectors
+
+# 감정 벡터를 저장한 JSON 파일 경로 설정
+current_dir = os.path.dirname(os.path.abspath(__file__))  # 현재 파일의 경로
+emotion_data_file = os.path.join(current_dir, 'emotion_data.json')
+music_vectors = load_music_vectors(emotion_data_file)
 
 # 업로드된 이미지 저장 경로 설정
 UPLOAD_FOLDER = 'uploads'
@@ -101,4 +105,4 @@ def upload_image():
         return jsonify({"music": recommended_music, "caption": caption, "top_emotions": top_two_emotions})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)  # 외부 접근 가능하도록 호스트와 포트 설정
+    app.run(debug=True)
