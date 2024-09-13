@@ -46,7 +46,7 @@ spotify에서 링크공유하고 링크에서 playlist/ 뒤에 있는게 track_i
     3. 우울/쓸쓸한 (Melancholic, Sad)
         - 이문세 - "가로수 그늘 아래 서면"
     4. 몽환적/차분한 (Dreamy, Chill)
-                - 백예린 - "Square (2017)"
+        - 백예린 - "Square (2017)"
     5. 분노/저항적 (Angry, Defiant) + 격렬한/강렬한 (Intense, Aggressive)
         - Eminem - "Lose Yourself"
 
