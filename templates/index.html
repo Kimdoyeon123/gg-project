@@ -3,109 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 감성 음악 매치 - 이미지로 찾는 나만의 BGM</title>
+    <title>🎵 Dreamy Music Match - Find Your Perfect BGM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Nanum Gothic', sans-serif;
+            font-family: 'Nunito', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
-            color: #333;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         h1 {
-            font-size: 2.5em;
-            color: #2c3e50;
+            font-size: 3em;
+            color: #3498db;
             margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
         .upload-box {
             background-color: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .upload-box::before {
-            content: "";
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #ffecd2);
-            filter: blur(20px);
-            opacity: 0.3;
-            z-index: -1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         #imageUpload {
             display: none;
         }
         .upload-label, #findMusicButton {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #3498db;
+            padding: 12px 24px;
+            background-color: #ff9ff3;
             color: white;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             border: none;
-            font-size: 16px;
+            font-size: 18px;
             margin: 10px 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .upload-label:hover, #findMusicButton:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
         #findMusicButton {
-            background-color: #2ecc71;
-        }
-        #findMusicButton:hover {
-            background-color: #27ae60;
+            background-color: #feca57;
         }
         #result {
             font-size: 1.2em;
             margin-top: 20px;
-            padding: 15px;
-            background-color: #ecf0f1;
-            border-radius: 10px;
+            padding: 20px;
+            background-color: rgba(236, 240, 241, 0.8);
+            border-radius: 15px;
         }
-        .crayon {
-            position: fixed;
+        .floating-element {
+            position: absolute;
+            pointer-events: none;
+        }
+        .star {
+            width: 30px;
+            height: 30px;
+            background-color: #f1c40f;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        .cloud {
             width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            opacity: 0.6;
-            z-index: -1;
+            height: 40px;
+            background-color: white;
+            border-radius: 20px;
         }
-        .crayon1 { top: 10%; left: 5%; background-color: #ff9ff3; }
-        .crayon2 { top: 80%; right: 5%; background-color: #feca57; }
-        .crayon3 { top: 50%; left: 80%; background-color: #48dbfb; }
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+        }
+        .cloud::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+        .cloud::after {
+            width: 70px;
+            height: 70px;
+            top: -35px;
+            right: 10px;
+        }
         #imagePreview {
             max-width: 100%;
-            max-height: 400px;
+            max-height: 300px;
             margin: 20px auto;
             display: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-    <div class="crayon crayon1"></div>
-    <div class="crayon crayon2"></div>
-    <div class="crayon crayon3"></div>
-    
     <div class="container">
-        <h1>🎵 감성 음악 매치</h1>
+        <div class="floating-element star" style="top: 10%; left: 5%;"></div>
+        <div class="floating-element cloud" style="top: 80%; right: 10%;"></div>
+        <div class="floating-element star" style="top: 20%; right: 15%;"></div>
+        
+        <h1>🎵 음악 사진 찾자</h1>
         <div class="upload-box" id="uploadBox">
-            <label for="imageUpload" class="upload-label">이미지 선택</label>
+            <label for="imageUpload" class="upload-label">사진 골라랑</label>
             <input type="file" id="imageUpload" accept="image/*">
-            <button id="findMusicButton" style="display: none;">감성 음악 찾기</button>
-            <img id="imagePreview" alt="업로드된 이미지 미리보기">
+            <img id="imagePreview" alt="Uploaded Image Preview">
+            <button id="findMusicButton" style="display: none;">음악 검색하기</button>
         </div>
         <p id="result"></p>
     </div>
@@ -114,7 +134,6 @@
         const imageUpload = document.getElementById('imageUpload');
         const imagePreview = document.getElementById('imagePreview');
         const findMusicButton = document.getElementById('findMusicButton');
-        const uploadBox = document.getElementById('uploadBox');
         const resultElement = document.getElementById('result');
 
         imageUpload.addEventListener('change', function(event) {
@@ -125,12 +144,6 @@
                     imagePreview.src = e.target.result;
                     imagePreview.style.display = 'block';
                     findMusicButton.style.display = 'inline-block';
-                    
-                    // 이미지 로드 후 업로드 박스 크기 조정
-                    imagePreview.onload = function() {
-                        uploadBox.style.width = this.width + 'px';
-                        uploadBox.style.maxWidth = '100%';
-                    }
                 }
                 reader.readAsDataURL(file);
             }
@@ -140,15 +153,15 @@
             let formData = new FormData();
             formData.append('image', imageUpload.files[0]);
 
-            resultElement.textContent = "분석 중...";
+            resultElement.textContent = "어울리는 음악 찾는중...";
 
             fetch('/upload-image', {
                 method: 'POST',
                 body: formData
             }).then(response => response.json()).then(data => {
-                resultElement.innerHTML = `<strong>추천 음악:</strong> ${data.music}<br><strong>이미지 설명:</strong> ${data.caption}`;
+                resultElement.innerHTML = `<strong>Recommended Music:</strong> ${data.music}<br><strong>Image Description:</strong> ${data.caption}`;
             }).catch(error => {
-                resultElement.textContent = "오류가 발생했습니다. 다시 시도해주세요.";
+                resultElement.textContent = "Oops! A little hiccup occurred. Let's try again!";
             });
         });
     </script>

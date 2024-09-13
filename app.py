@@ -33,12 +33,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-def get_top_two_emotions(emotion_scores):
-    # 감정 결과에서 상위 두 감정 추출
-    sorted_emotions = sorted(emotion_scores.items(), key=lambda x: x[1], reverse=True)
-    top_two_emotions = sorted_emotions[:2]
-    return top_two_emotions
-
 def calculate_cosine_similarity(emotion_vector, music_vectors):
     # 코사인 유사도를 계산하여 가장 유사한 음악을 선택
     best_match = None
@@ -84,9 +78,6 @@ def upload_image():
         emotion_scores = {emotion['label']: emotion['score'] for emotion in emotions}
         print("감정 점수:", emotion_scores)  # 감정 점수를 출력
 
-        # 상위 두 감정 추출
-        top_two_emotions = get_top_two_emotions(emotion_scores)
-
         # 감정 벡터 생성 (7차원: anger, disgust, fear, joy, neutral, sadness, surprise)
         emotion_vector = np.array([
             emotion_scores.get('anger', 0),
@@ -102,7 +93,7 @@ def upload_image():
         # 음악 추천: 코사인 유사도 계산
         recommended_music = calculate_cosine_similarity(emotion_vector, music_vectors)
 
-        return jsonify({"music": recommended_music, "caption": caption, "top_emotions": top_two_emotions})
+        return jsonify({"music": recommended_music, "caption": caption, "emotion_scores": emotion_scores})
 
 if __name__ == '__main__':
     app.run(debug=True)

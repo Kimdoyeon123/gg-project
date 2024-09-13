@@ -15,25 +15,30 @@ def get_audio_features(track_id):
     features = sp.audio_features(track_id)
     return features[0] if features else None
 
-# Spotify의 audio features를 7개의 감정으로 변환
 def embed_emotions_from_audio_features(audio_features):
     tempo = audio_features['tempo']
     valence = audio_features['valence']
     energy = audio_features['energy']
+    danceability = audio_features['danceability']
+    acousticness = audio_features['acousticness']
+    speechiness = audio_features['speechiness']
+    liveness = audio_features['liveness']
+    instrumentalness = audio_features['instrumentalness']
 
     # 7가지 감정 벡터 초기화 (anger, disgust, fear, joy, neutral, sadness, surprise)
     emotions = np.zeros(7)
 
-    # 감정 기여도를 기반으로 각 감정에 맞춰 임베딩
-    emotions[0] = (energy * 0.6 + tempo * 0.4) / 200  # anger
-    emotions[1] = ((1 - valence) * 0.7 + energy * 0.3)  # disgust
-    emotions[2] = (1 - valence) * 0.6 + (tempo / 200) * 0.4  # fear
-    emotions[3] = valence * 0.8 + energy * 0.2  # joy
-    emotions[4] = (0.5 - abs(valence - 0.5)) * 2  # neutral
-    emotions[5] = (1 - valence) * 0.8 + (1 - energy) * 0.2  # sadness
-    emotions[6] = tempo / 200  # surprise
+    # 감정 기여도를 기반으로 각 감정에 맞춰 임베딩 (더 많은 audio features 포함)
+    emotions[0] = (energy * 0.4 + tempo * 0.2 + speechiness * 0.2 + liveness * 0.2) / 200  # anger
+    emotions[1] = ((1 - valence) * 0.5 + energy * 0.2 + acousticness * 0.3)  # disgust
+    emotions[2] = (1 - valence) * 0.5 + (tempo / 200) * 0.2 + liveness * 0.3  # fear
+    emotions[3] = valence * 0.5 + energy * 0.2 + danceability * 0.2 + acousticness * 0.1  # joy
+    emotions[4] = (0.5 - abs(valence - 0.5)) * 2 + acousticness * 0.2  # neutral
+    emotions[5] = (1 - valence) * 0.5 + (1 - energy) * 0.2 + acousticness * 0.3  # sadness
+    emotions[6] = (tempo / 200) * 0.5 + liveness * 0.3 + speechiness * 0.2  # surprise
 
     return emotions.tolist()
+
 
 # 기존 JSON 파일을 읽어오는 함수
 def load_emotion_data(file_path):
@@ -92,7 +97,7 @@ file_path = os.path.abspath('gg-project/emotion_data.json')
 print(f"파일 경로 확인: {file_path}")
 
 # 예시 플레이리스트 처리
-playlist_id = '1stCq3IhxqoIu7xfaWPIAc'  # Spotify의 플레이리스트 ID
+playlist_id = '1nCr1ddkoQAU3U7Y46SbPF'  # Spotify의 플레이리스트 ID
 
 # 플레이리스트 내 모든 곡 감정 분석 및 업데이트
 process_playlist(playlist_id, file_path)

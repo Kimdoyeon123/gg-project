@@ -1,9 +1,7 @@
 "# gg-project" 
 
-![image](https://github.com/user-attachments/assets/45ca64b5-b00f-48f4-8da7-bd3be4bc9ad0)
+torchvision 버전 맞춰야해서 프로젝트 전용 가상환경 따로 만드시구
+pip install -r requirements.txt
 
-
-![image](https://github.com/user-attachments/assets/2782b075-2f5c-484d-989c-f818ea4d6feb)
-
-
-![image](https://github.com/user-attachments/assets/48c014af-4dbf-44fa-ac6b-79f04e1b3b15)
+cd "app.py의 상위폴더"
+python app.py
