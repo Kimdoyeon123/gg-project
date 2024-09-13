@@ -15,7 +15,8 @@ emotion_data.py 실행하면 됨
 코드 젤 마지막에 track_id 있음 track_id = playlist id   
 
 spotify에서 링크공유하고 링크에서 playlist/ 뒤에 있는게 track_id임   
-   
+![spotify](https://github.com/user-attachments/assets/1201cb34-4c78-4f30-8b4e-b81a27f1ed93)   
+
 이제 저 트랙 안에 있는 노래들의 오디오 피처를 싹 다 가져올거임 + 그걸로 jhartmann의 7가지 감정(anger, fear 등...)과 연결지을 거   
     <pre><code>
     emotions[0] = (energy * 0.4 + tempo * 0.2 + speechiness * 0.2 + liveness * 0.2) / 200  # anger
