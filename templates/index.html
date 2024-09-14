@@ -159,7 +159,15 @@
                 method: 'POST',
                 body: formData
             }).then(response => response.json()).then(data => {
-                resultElement.innerHTML = `<strong>Recommended Music:</strong> ${data.music}<br><strong>Image Description:</strong> ${data.caption}`;
+                // 결과로 반환된 상위 5개 음악을 리스트로 출력
+                let musicList = '<strong>Recommended Music (Top 5):</strong><br><ul>';
+                data.top_5_music.forEach(item => {
+                    musicList += `<li>${item.music} - 유사도: ${item.similarity.toFixed(2)}</li>`;
+                });
+                musicList += '</ul>';
+
+                // 결과를 화면에 표시
+                resultElement.innerHTML = `${musicList}<br><strong>Image Description:</strong> ${data.caption}`;
             }).catch(error => {
                 resultElement.textContent = "Oops! A little hiccup occurred. Let's try again!";
             });

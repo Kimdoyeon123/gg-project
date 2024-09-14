@@ -33,17 +33,37 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+# 코사인 유사도를 계산하는 함수
 def calculate_cosine_similarity(emotion_vector, music_vectors):
-    # 코사인 유사도를 계산하여 가장 유사한 음악을 선택
-    best_match = None
-    highest_similarity = -1
+    similarities = []
+
+    # 감정 벡터 크기 확인
+    print(f"Emotion Vector Shape: {emotion_vector.shape}")
+
     for music, vector in music_vectors.items():
-        similarity = cosine_similarity([emotion_vector], [vector])[0][0]
-        print(f"음악: {music}, 유사도: {similarity}")  # 각 음악에 대한 유사도 출력
-        if similarity > highest_similarity:
-            highest_similarity = similarity
-            best_match = music
-    return best_match if best_match else "No music available for this emotion"
+        print(f"Music Vector Shape for {music}: {vector.shape}")  # 음악 벡터의 크기 출력
+        
+        if len(emotion_vector) != len(vector):
+            print(f"Vector size mismatch for {music}. Skipping this track.")
+            continue
+        
+        try:
+            # 코사인 유사도 계산
+            similarity = cosine_similarity([emotion_vector], [vector])[0][0]
+            similarities.append((music, similarity))  # 유사도 저장
+        except Exception as e:
+            print(f"Error calculating cosine similarity for {music}: {e}")
+
+    # 유사도 내림차순으로 정렬
+    similarities = sorted(similarities, key=lambda x: x[1], reverse=True)
+
+    # 상위 5개만 터미널에 출력
+    print("상위 5개의 유사도:")
+    for i, (music, similarity) in enumerate(similarities[:5]):
+        print(f"음악: {music}, 유사도: {similarity}")
+
+    # 상위 5개의 음악을 반환
+    return similarities[:5]
 
 @app.route('/')
 def index():
@@ -51,7 +71,6 @@ def index():
 
 @app.route('/upload-image', methods=['POST'])
 def upload_image():
-    # 파일 업로드 처리
     if 'image' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -74,8 +93,8 @@ def upload_image():
         emotions = emotion_classifier(caption)
         print("감정 분석 결과:", emotions)  # 감정 분석 결과를 터미널에 출력
 
-        # 감정 결과를 dict로 변환
-        emotion_scores = {emotion['label']: emotion['score'] for emotion in emotions}
+        # 감정 결과를 dict로 변환 (리스트의 첫 번째 요소에 접근)
+        emotion_scores = {emotion['label']: emotion['score'] for emotion in emotions[0]}
         print("감정 점수:", emotion_scores)  # 감정 점수를 출력
 
         # 감정 벡터 생성 (7차원: anger, disgust, fear, joy, neutral, sadness, surprise)
@@ -91,9 +110,13 @@ def upload_image():
         print("감정 벡터:", emotion_vector)  # 감정 벡터를 출력
 
         # 음악 추천: 코사인 유사도 계산
-        recommended_music = calculate_cosine_similarity(emotion_vector, music_vectors)
+        top_5_similarities = calculate_cosine_similarity(emotion_vector, music_vectors)
 
-        return jsonify({"music": recommended_music, "caption": caption, "emotion_scores": emotion_scores})
+        return jsonify({
+            "top_5_music": [{"music": music, "similarity": similarity} for music, similarity in top_5_similarities],
+            "caption": caption,
+            "emotion_scores": emotion_scores
+        })
 
 if __name__ == '__main__':
     app.run(debug=False, threaded=False)
