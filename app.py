@@ -11,7 +11,7 @@ app = Flask(__name__)
 # 모델 불러오기
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-emotion_classifier = pipeline("sentiment-analysis", model="j-hartmann/emotion-english-distilroberta-base", framework="pt")
+emotion_classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", framework="pt", return_all_scores=True)
 
 # JSON 파일로부터 음악 감정 벡터를 불러오기
 def load_music_vectors(json_file):
@@ -96,4 +96,4 @@ def upload_image():
         return jsonify({"music": recommended_music, "caption": caption, "emotion_scores": emotion_scores})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, threaded=False)
