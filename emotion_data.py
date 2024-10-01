@@ -23,7 +23,7 @@ def embed_emotions_from_audio_features(audio_features):
     acousticness = audio_features['acousticness']
     speechiness = audio_features['speechiness']
     liveness = audio_features['liveness']
-    instrumentalness = audio_features['instrumentalness']
+    
 
     # 7가지 감정 벡터 초기화 (anger, disgust, fear, joy, neutral, sadness, surprise)
     emotions = np.zeros(7)
@@ -97,7 +97,9 @@ file_path = os.path.abspath('gg-project/emotion_data.json')
 print(f"파일 경로 확인: {file_path}")
 
 # 예시 플레이리스트 처리
-playlist_id = '1nCr1ddkoQAU3U7Y46SbPF'  # Spotify의 플레이리스트 ID
+playlist_id = '3d7l2gmMWjDGMfKZCTawbS'  # Spotify의 플레이리스트 ID
 
 # 플레이리스트 내 모든 곡 감정 분석 및 업데이트
 process_playlist(playlist_id, file_path)
+
+
